@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4B638DF22C85B35200694DA2 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4B638DF12C85B35200694DA2 /* SDWebImageSwiftUI */; };
+		4B9CEF772C85BF07008C6CD3 /* PhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B9CEF762C85BF07008C6CD3 /* PhotoView.swift */; };
 		4BD0B65C2C859F0E003CEC70 /* Photos_DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD0B65B2C859F0E003CEC70 /* Photos_DemoApp.swift */; };
 		4BD0B65E2C859F0E003CEC70 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD0B65D2C859F0E003CEC70 /* ContentView.swift */; };
 		4BD0B6602C859F10003CEC70 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4BD0B65F2C859F10003CEC70 /* Assets.xcassets */; };
@@ -39,6 +40,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4B9CEF762C85BF07008C6CD3 /* PhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoView.swift; sourceTree = "<group>"; };
 		4BD0B6582C859F0E003CEC70 /* Photos Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Photos Demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BD0B65B2C859F0E003CEC70 /* Photos_DemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photos_DemoApp.swift; sourceTree = "<group>"; };
 		4BD0B65D2C859F0E003CEC70 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 			isa = PBXGroup;
 			children = (
 				4BD0B65D2C859F0E003CEC70 /* ContentView.swift */,
+				4B9CEF762C85BF07008C6CD3 /* PhotoView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -305,6 +308,7 @@
 				4BD0B65E2C859F0E003CEC70 /* ContentView.swift in Sources */,
 				4BD0B68C2C85A0FB003CEC70 /* PhotosViewModel.swift in Sources */,
 				4BD0B65C2C859F0E003CEC70 /* Photos_DemoApp.swift in Sources */,
+				4B9CEF772C85BF07008C6CD3 /* PhotoView.swift in Sources */,
 				4BD0B6872C859F3A003CEC70 /* PhotosModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
