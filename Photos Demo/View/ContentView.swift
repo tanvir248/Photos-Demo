@@ -41,16 +41,21 @@ struct ContentView: View {
                             .clipped()
                             .contextMenu {
                                 Button {
+                                    UIPasteboard.general.string = urlOriginal
+                                } label: {
+                                    Label("Copy", systemImage: "doc.on.doc")
+                                }
+                                Button {
                                     imageModel.imageURL = urlOriginal
                                     imageModel.isOpen = true
                                 } label: {
-                                    Label("Open", systemImage: "globe")
+                                    Label("Open", systemImage: "photo.fill")
                                 }
 
                                 Button{
                                     
                                 }label: {
-                                    Label("Details", systemImage: "location.circle")
+                                    Label("Details", systemImage: "info.circle")
                                 }
                             
                                 ShareLink(item: URL(string: urlOriginal) ?? url) {

@@ -40,7 +40,7 @@ struct PhotoView: View {
                                      totalZoom -= 1
                                  }
                              }
-                             .onTapGesture {
+                             .onTapGesture(count: 2){
                                  withAnimation {
                                      if totalZoom == 1.0 {
                                          currentZoom = 1.0
@@ -50,7 +50,6 @@ struct PhotoView: View {
                                          totalZoom = 1.0
 
                                      }
-//                                     currentZoom = 0.0
                                      
                                  }
                              }
