@@ -17,6 +17,8 @@ struct ContentView: View {
     @StateObject private var vm = PhotosViewModel()
     @State private var imageModel: LargeImage = LargeImage()
     @State private var openImage: Bool = false
+    @State private var imageAppearCount: Int = 0
+    @State private var currentPage: Int = 1
     var body: some View {
         VStack {
             ScrollView {
@@ -64,7 +66,17 @@ struct ContentView: View {
                                     } placeholder: {
                                         ProgressView().progressViewStyle(CircularProgressViewStyle())
                                     }.padding(3)
-                                        .frame(width: 250, height: 250)
+                                     .frame(width: 250, height: 250)
+                                }
+                            }
+                            .onFirstAppear {
+                                imageAppearCount += 1
+                                if imageAppearCount % 55 == 0 {
+                                    currentPage += 1
+                                }
+                                if imageAppearCount % 55 == 0 && imageAppearCount < vm.totalPhotos {
+                                    print("currentPage \(currentPage)")
+                                    vm.fetchPhotos(currentPage)
                                 }
                             }
                         }
@@ -75,7 +87,7 @@ struct ContentView: View {
             PhotoView(urlString: imageModel.imageURL)
         })
         .onAppear {
-            vm.fetchPhotos()
+            vm.fetchPhotos(1)
         }
     }
 }
@@ -87,4 +99,27 @@ struct ContentView: View {
 struct LargeImage {
     var isOpen: Bool = false
     var imageURL: String = ""
+}
+
+public extension View {
+    func onFirstAppear(perform action: @escaping () -> Void) -> some View {
+        modifier(ViewFirstAppearModifier(perform: action))
+    }
+}
+
+struct ViewFirstAppearModifier: ViewModifier {
+    @State private var didAppearBefore = false
+    private let action: () -> Void
+
+    init(perform action: @escaping () -> Void) {
+        self.action = action
+    }
+
+    func body(content: Content) -> some View {
+        content.onAppear {
+            guard !didAppearBefore else { return }
+            didAppearBefore = true
+            action()
+        }
+    }
 }

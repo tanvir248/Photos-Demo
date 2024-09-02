@@ -11,19 +11,19 @@ import Alamofire
 class PhotosViewModel: ObservableObject {
 
     @Published var viewModelPhotos : [Photo] = []
+    @Published var totalPhotos: Int = 0
     
-    
-    func fetchPhotos(){
+    func fetchPhotos(_ page: Int){
         var headers = HTTPHeaders()
         headers["Authorization"] = "vm92QCeCUpbBrDTvodY70SiekrTOvfnwlszlwQRe7CcDOX2SCkmK8qYX"
-        AF.request("https://api.pexels.com/v1/curated?page=2&per_page=100",method: .get, headers: headers ).responseData { response in
+        
+        AF.request("https://api.pexels.com/v1/curated?page=\(page)&per_page=60",method: .get, headers: headers ).responseData { response in
             switch response.result {
             case .success(let data):
                 do {
-                    
                     let data = try JSONDecoder().decode(PhotosModel.self, from: data)
-                    self.viewModelPhotos = data.photos ?? []
-                    
+                    self.viewModelPhotos += data.photos ?? []
+                    self.totalPhotos = data.totalResults ?? 0
                 }catch {
                     print("decode error \(error.localizedDescription)")
                 }
