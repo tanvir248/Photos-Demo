@@ -8,11 +8,11 @@
 import Foundation
 
 // MARK: - Photos
-struct Photos: Codable {
-    let page, perPage: Int
-    let photos: [Photo]
-    let totalResults: Int
-    let nextPage: String
+struct PhotosModel: Codable {
+    let page, perPage: Int?
+    let photos: [Photo]?
+    let totalResults: Int?
+    let nextPage: String?
 
     enum CodingKeys: String, CodingKey {
         case page
@@ -25,15 +25,15 @@ struct Photos: Codable {
 
 // MARK: - Photo
 struct Photo: Codable {
-    let id, width, height: Int
-    let url: String
-    let photographer: String
-    let photographerURL: String
-    let photographerID: Int
-    let avgColor: String
-    let src: Src
-    let liked: Bool
-    let alt: String
+    let id, width, height: Int?
+    let url: String?
+    let photographer: String?
+    let photographerURL: String?
+    let photographerID: Int?
+    let avgColor: String?
+    let src: Src?
+    let liked: Bool?
+    let alt: String?
 
     enum CodingKeys: String, CodingKey {
         case id, width, height, url, photographer
@@ -46,8 +46,8 @@ struct Photo: Codable {
 
 // MARK: - Src
 struct Src: Codable {
-    let original, large2X, large, medium: String
-    let small, portrait, landscape, tiny: String
+    let original, large2X, large, medium: String?
+    let small, portrait, landscape, tiny: String?
 
     enum CodingKeys: String, CodingKey {
         case original
