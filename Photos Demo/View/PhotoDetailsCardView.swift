@@ -8,15 +8,10 @@
 import SwiftUI
 
 struct PhotoDetailsCardView: View {
-    var photoWidth: Int
-    var photoHeight: Int
-    var name: String
-    var photoGrapher: String
-    var photoGrapherId: String
-    var title: String
+    var photo: Photo
     var body: some View {
         Form {
-            if !title.isEmpty {
+            if let title = photo.alt, !title.isEmpty {
                 Section("Titile") {
                     Text(title)
                         .font(.headline)
@@ -24,23 +19,25 @@ struct PhotoDetailsCardView: View {
                 }
             }
             Section("Introduction") {
-                Text("Image : \(name)")
+                if let imgUrl = photo.src?.original {
+                    Text("Image : \(imageNameFromURL(imgUrl))")
+                        .font(.subheadline)
+                        .italic()
+                        .bold()
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.5)
+                }
+                Text("Photographer : \(photo.photographer ?? "")")
                     .font(.subheadline)
                     .italic()
                     .bold()
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.5)
-                Text("Photographer : \(photoGrapher)")
-                    .font(.subheadline)
-                    .italic()
-                    .bold()
-                Text("Photographer ID : \(photoGrapherId)")
+                Text("Photographer ID : \(photo.photographerID ?? 0)")
                     .font(.subheadline)
                     .italic()
                     .bold()
             }
             Section("Configeration") {
-                Text("Width : \(String(photoWidth)), Height: \(String(photoHeight))")
+                Text("Width : \(String(photo.width ?? 0)), Height: \(String(photo.height ?? 0))")
                     .font(.subheadline)
                     .italic()
                     .bold()
@@ -55,13 +52,18 @@ struct PhotoDetailsCardView: View {
         }
     }
     private func photoMegapixel() -> String {
+        let photoWidth = photo.width ?? 0
+        let photoHeight = photo.height ?? 0
         let megapixel : Double = Double(Double(photoWidth * photoHeight) / 1000000.0)
         
         
-        return String(format: "%.02f", megapixel)
+        return String(format: "%.01f", megapixel)
     }
+    private func imageNameFromURL(_ url: String) -> String{
+        let splitUrl = url.split(separator: "/")
+        
+        return String(splitUrl.last ?? "")
+    }
+
 }
 
-#Preview {
-    PhotoDetailsCardView(photoWidth: 3616, photoHeight: 5425, name: "pexels-photo-27890690.jpeg", photoGrapher: "yusragonul", photoGrapherId: "1653669305", title: "A tower with a view of the countryside")
-}

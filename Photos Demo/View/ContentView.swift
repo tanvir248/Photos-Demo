@@ -16,9 +16,11 @@ struct ContentView: View {
     ]
     @StateObject private var vm = PhotosViewModel()
     @State private var imageModel: LargeImage = LargeImage()
+    @State private var photoModel: Photo?
     @State private var openImage: Bool = false
     @State private var imageAppearCount: Int = 0
     @State private var currentPage: Int = 1
+    @State private var originalImageUrl: String = ""
     @State private var openPhotoDetails: Bool = false
     var body: some View {
         VStack {
@@ -27,7 +29,7 @@ struct ContentView: View {
                     ForEach(vm.viewModelPhotos, id: \.src?.original) { photo in
                         if let urlStr = photo.src?.small, let url = URL(string: urlStr),let urlOriginal = photo.src?.original{
                             Button {
-                                print(photo)
+                                print(photo.alt ?? "")
                                 imageModel.imageURL = urlOriginal
                                 imageModel.isOpen = true
                             }label: {
@@ -48,14 +50,20 @@ struct ContentView: View {
                                     Label("Copy", systemImage: "doc.on.doc")
                                 }
                                 Button {
-                                    imageModel.imageURL = urlOriginal
-                                    imageModel.isOpen = true
+                                    DispatchQueue.main.async {
+                                        self.imageModel.imageURL = urlOriginal
+                                        self.imageModel.isOpen = true
+                                    }
+                                    
                                 } label: {
                                     Label("Open", systemImage: "photo.fill")
                                 }
 
                                 Button{
-                                    openPhotoDetails = true
+                                    DispatchQueue.main.async {
+                                        self.photoModel = photo
+                                        self.openPhotoDetails = true
+                                    }
                                 }label: {
                                     Label("Details", systemImage: "info.circle")
                                 }
@@ -77,6 +85,7 @@ struct ContentView: View {
                                      .frame(width: 250, height: 250)
                                 }
                             }
+
                             .onFirstAppear {
                                 imageAppearCount += 1
                                 if imageAppearCount % 55 == 0 {
@@ -87,12 +96,6 @@ struct ContentView: View {
                                     vm.fetchPhotos(currentPage)
                                 }
                             }
-                            .sheet(isPresented: $openPhotoDetails) {
-                                PhotoDetailsCardView(photoWidth: photo.width ?? 0, photoHeight: photo.height ?? 0, name: imageNameFromURL(urlOriginal), photoGrapher: photo.photographer ?? "", photoGrapherId: String(photo.photographerID ?? 0), title: photo.alt ?? "")
-                                    .presentationDetents([.height(200), .medium])
-                                    .presentationDragIndicator(.visible)
-                            }
-
                         }
                     }
                 }
@@ -100,14 +103,20 @@ struct ContentView: View {
         }.fullScreenCover(isPresented: $imageModel.isOpen, content: {
             PhotoView(urlString: imageModel.imageURL)
         })
+        .sheet(isPresented: $openPhotoDetails) {
+            ZStack {
+                if let photo = photoModel {
+                    PhotoDetailsCardView(photo: photo)
+                }else {
+                    Text("Error to show details")
+                }
+            }
+            .presentationDetents([.height(200), .medium])
+            .presentationDragIndicator(.visible)
+        }
         .onAppear {
             vm.fetchPhotos(1)
         }
-    }
-    private func imageNameFromURL(_ url: String) -> String{
-        let splitUrl = url.split(separator: "/")
-        
-        return String(splitUrl.last ?? "")
     }
 }
 
