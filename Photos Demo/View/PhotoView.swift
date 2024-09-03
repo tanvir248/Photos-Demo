@@ -65,6 +65,8 @@ struct PhotoView: View {
                             }
                     } placeholder: {
                         ProgressView().progressViewStyle(CircularProgressViewStyle())
+                            .scaleEffect(2)
+                            .tint(.secondary)
                     }
                 }
             }.toolbar{
