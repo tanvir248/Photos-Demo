@@ -87,6 +87,12 @@ struct ContentView: View {
                                     vm.fetchPhotos(currentPage)
                                 }
                             }
+                            .sheet(isPresented: $openPhotoDetails) {
+                                PhotoDetailsCardView(photoWidth: photo.width ?? 0, photoHeight: photo.height ?? 0, name: imageNameFromURL(urlOriginal), photoGrapher: photo.photographer ?? "", photoGrapherId: String(photo.photographerID ?? 0), title: photo.alt ?? "")
+                                    .presentationDetents([.height(200), .medium])
+                                    .presentationDragIndicator(.visible)
+                            }
+
                         }
                     }
                 }
@@ -94,14 +100,14 @@ struct ContentView: View {
         }.fullScreenCover(isPresented: $imageModel.isOpen, content: {
             PhotoView(urlString: imageModel.imageURL)
         })
-        .sheet(isPresented: $openPhotoDetails) {
-            Text("Details")
-                .presentationDetents([.height(200), .medium])
-                .presentationDragIndicator(.visible)
-        }
         .onAppear {
             vm.fetchPhotos(1)
         }
+    }
+    private func imageNameFromURL(_ url: String) -> String{
+        let splitUrl = url.split(separator: "/")
+        
+        return String(splitUrl.last ?? "")
     }
 }
 

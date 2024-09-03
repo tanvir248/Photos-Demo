@@ -16,15 +16,20 @@ struct PhotoDetailsCardView: View {
     var title: String
     var body: some View {
         Form {
-            Section("Titile") {
-                HStack(alignment: .top){
+            if !title.isEmpty {
+                Section("Titile") {
                     Text(title)
                         .font(.headline)
                         .italic()
                 }
             }
             Section("Introduction") {
-                Text("Image")
+                Text("Image : \(name)")
+                    .font(.subheadline)
+                    .italic()
+                    .bold()
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.5)
                 Text("Photographer : \(photoGrapher)")
                     .font(.subheadline)
                     .italic()
@@ -34,8 +39,26 @@ struct PhotoDetailsCardView: View {
                     .italic()
                     .bold()
             }
+            Section("Configeration") {
+                Text("Width : \(String(photoWidth)), Height: \(String(photoHeight))")
+                    .font(.subheadline)
+                    .italic()
+                    .bold()
+                    .lineLimit(2)
+                Text("Size : \(photoMegapixel())MP")
+                    .font(.subheadline)
+                    .italic()
+                    .bold()
+
+            }
             
         }
+    }
+    private func photoMegapixel() -> String {
+        let megapixel : Double = Double(Double(photoWidth * photoHeight) / 1000000.0)
+        
+        
+        return String(format: "%.02f", megapixel)
     }
 }
 
