@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct Photos_DemoApp: App {
+    @StateObject var downloadTask = DownloadTaksManager()
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(downloadTask)
         }
     }
 }

@@ -12,6 +12,9 @@ struct PhotoView: View {
     var urlString: String
     @State private var currentZoom = 0.0
     @State private var totalZoom = 1.0
+    
+    @EnvironmentObject var download: DownloadTaksManager
+
     @State private var offset: CGSize = .zero
     @Environment(\.dismiss) var dismiss
     var body: some View {
@@ -79,10 +82,26 @@ struct PhotoView: View {
                     }
                     
                 }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        download.downloadFile(urlString: urlString, fileType: imageNameFromURL(urlString))
+                        dismiss()
+                    }label: {
+                        Text("Download")
+                    }
+                    
+                }
+
             }
             
         }
     }
+    private func imageNameFromURL(_ url: String) -> String{
+        let splitUrl = url.split(separator: "/")
+        
+        return String(splitUrl.last ?? "")
+    }
+
 }
 
 #Preview {
