@@ -12,7 +12,7 @@ struct PhotoView: View {
     var urlString: String
     @State private var currentZoom = 0.0
     @State private var totalZoom = 1.0
-
+    @State private var offset: CGSize = .zero
     @Environment(\.dismiss) var dismiss
     var body: some View {
         NavigationView{
@@ -22,37 +22,47 @@ struct PhotoView: View {
                         image
                             .resizable()
                             .scaledToFit()
+                            .offset(totalZoom > 1.0 ? offset : CGSize.zero)
                             .scaleEffect(currentZoom + totalZoom)
-                             .gesture(
-                                 MagnifyGesture()
-                                     .onChanged { value in
-                                         currentZoom = value.magnification - 1
-                                     }
-                                     .onEnded { value in
-                                         totalZoom += currentZoom
-                                         currentZoom = 0
-                                     }
-                             )
-                             .accessibilityZoomAction { action in
-                                 if action.direction == .zoomIn {
-                                     totalZoom += 1
-                                 } else {
-                                     totalZoom -= 1
-                                 }
-                             }
-                             .onTapGesture(count: 2){
-                                 withAnimation {
-                                     if totalZoom == 1.0 {
-                                         currentZoom = 1.0
-                                         totalZoom = 2.0
-                                     }else {
-                                         currentZoom = 0.0
-                                         totalZoom = 1.0
-
-                                     }
-                                     
-                                 }
-                             }
+                            .gesture(
+                                DragGesture()
+                                    .onChanged({ value in
+                                        withAnimation {
+                                            offset = value.translation
+                                        }
+                                    })
+                            )
+                            .gesture(
+                                MagnifyGesture()
+                                    .onChanged { value in
+                                            currentZoom = value.magnification - 1
+                                    }
+                                    .onEnded { value in
+                                        totalZoom += currentZoom
+                                        currentZoom = 0
+                                    }
+                            )
+                            .accessibilityZoomAction { action in
+                                
+                                if action.direction == .zoomIn {
+                                    totalZoom += 1
+                                } else {
+                                    totalZoom -= 1
+                                }
+                            }
+                            .onTapGesture(count: 2){
+                                withAnimation {
+                                    if totalZoom == 1.0 {
+                                        currentZoom = 1.0
+                                        totalZoom = 2.0
+                                    }else {
+                                        currentZoom = 0.0
+                                        totalZoom = 1.0
+                                        offset = .zero
+                                    }
+                                    
+                                }
+                            }
                     } placeholder: {
                         ProgressView().progressViewStyle(CircularProgressViewStyle())
                     }
@@ -60,14 +70,15 @@ struct PhotoView: View {
             }.toolbar{
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
+                        offset = .zero
                         dismiss()
                     }label: {
                         Image(systemName: "chevron.left")
                     }
-
+                    
                 }
             }
-
+            
         }
     }
 }

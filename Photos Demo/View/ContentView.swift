@@ -74,7 +74,7 @@ struct ContentView: View {
 
 
                             }preview: {
-                                if  let urlMedium = photo.src?.medium, let url = URL(string: urlMedium) {
+                                if  let urlMedium = photo.src?.medium, let url = URL(string: urlMedium), let width = photo.width, let height = photo.height {
                                     WebImage(url: url) { image in
                                         image
                                             .resizable()
