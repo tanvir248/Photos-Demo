@@ -19,13 +19,15 @@ struct ContentView: View {
     @State private var openImage: Bool = false
     @State private var imageAppearCount: Int = 0
     @State private var currentPage: Int = 1
+    @State private var openPhotoDetails: Bool = false
     var body: some View {
         VStack {
             ScrollView {
                 LazyVGrid(columns: layout, spacing: 1){
-                    ForEach(vm.viewModelPhotos, id: \.src?.original) { photos in
-                        if let urlStr = photos.src?.small, let url = URL(string: urlStr),let urlOriginal = photos.src?.original{
+                    ForEach(vm.viewModelPhotos, id: \.src?.original) { photo in
+                        if let urlStr = photo.src?.small, let url = URL(string: urlStr),let urlOriginal = photo.src?.original{
                             Button {
+                                print(photo)
                                 imageModel.imageURL = urlOriginal
                                 imageModel.isOpen = true
                             }label: {
@@ -53,7 +55,7 @@ struct ContentView: View {
                                 }
 
                                 Button{
-                                    
+                                    openPhotoDetails = true
                                 }label: {
                                     Label("Details", systemImage: "info.circle")
                                 }
@@ -64,7 +66,7 @@ struct ContentView: View {
 
 
                             }preview: {
-                                if  let urlMedium = photos.src?.medium, let url = URL(string: urlMedium) {
+                                if  let urlMedium = photo.src?.medium, let url = URL(string: urlMedium) {
                                     WebImage(url: url) { image in
                                         image
                                             .resizable()
@@ -92,6 +94,11 @@ struct ContentView: View {
         }.fullScreenCover(isPresented: $imageModel.isOpen, content: {
             PhotoView(urlString: imageModel.imageURL)
         })
+        .sheet(isPresented: $openPhotoDetails) {
+            Text("Details")
+                .presentationDetents([.height(200), .medium])
+                .presentationDragIndicator(.visible)
+        }
         .onAppear {
             vm.fetchPhotos(1)
         }
