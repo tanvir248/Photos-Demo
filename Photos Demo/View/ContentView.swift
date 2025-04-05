@@ -35,59 +35,19 @@ struct ContentView: View {
                                     imageModel.imageURL = urlOriginal
                                     imageModel.isOpen = true
                                 }label: {
-                                    WebImage(url: url) { image in
-                                        image
-                                            .resizable()
-                                            .scaledToFill()
-                                    } placeholder: {
-                                        ProgressView().progressViewStyle(CircularProgressViewStyle())
-                                    }
+                                    showContentImage(url: url)
                                 }
                                 .frame(width: (UIScreen.main.bounds.width / 4) - 1,height: (UIScreen.main.bounds.width / 4) - 1)
                                 .clipped()
                                 .contextMenu {
-                                    Button {
-                                        UIPasteboard.general.string = urlOriginal
-                                    } label: {
-                                        Label("Copy", systemImage: "doc.on.doc")
-                                    }
-                                    Button {
-                                        DispatchQueue.main.async {
-                                            self.imageModel.imageURL = urlOriginal
-                                            self.imageModel.isOpen = true
-                                        }
-                                        
-                                    } label: {
-                                        Label("Open", systemImage: "photo.fill")
-                                    }
-                                    
-                                    Button{
-                                        DispatchQueue.main.async {
-                                            self.photoModel = photo
-                                            self.openPhotoDetails = true
-                                        }
-                                    }label: {
-                                        Label("Details", systemImage: "info.circle")
-                                    }
-                                    
-                                    ShareLink(item: URL(string: urlOriginal) ?? url) {
-                                        Label("Share", systemImage: "square.and.arrow.up")
-                                    }
-                                    
-                                    
-                                }preview: {
+                                    contextMenuItems(photo: photo)
+                                } preview: {
                                     if  let urlMedium = photo.src?.medium, let url = URL(string: urlMedium), let width = photo.width, let height = photo.height {
-                                        WebImage(url: url) { image in
-                                            image
-                                                .resizable()
-                                                .scaledToFit()
-                                        } placeholder: {
-                                            ProgressView().progressViewStyle(CircularProgressViewStyle())
-                                        }.padding(3)
+                                        showContentImage(url: url)
+                                        .padding(3)
                                             .frame(width: 250, height: 250)
                                     }
                                 }
-                                //Pagination here
                                 .onFirstAppear {
                                     imageAppearCount += 1
                                     if imageAppearCount % 55 == 0 {
@@ -105,15 +65,7 @@ struct ContentView: View {
                 PhotoView(urlString: imageModel.imageURL)
             })
             .sheet(isPresented: $openPhotoDetails) {
-                ZStack {
-                    if let photo = photoModel {
-                        PhotoDetailsCardView(photo: photo)
-                    }else {
-                        Text("Error to show details")
-                    }
-                }
-                .presentationDetents([.height(200), .medium])
-                .presentationDragIndicator(.visible)
+                openSheetWithPhoto()
             }
             .onAppear {
                 vm.fetchPhotos(1)
@@ -127,6 +79,67 @@ struct ContentView: View {
                 }
             }
         }
+    }
+    
+    @ViewBuilder
+    func contextMenuItems(photo: Photo) -> some View {
+        if let urlStr = photo.src?.small,
+           let url = URL(string: urlStr),
+           let urlOriginal = photo.src?.original {
+            
+            VStack {
+                Button {
+                    UIPasteboard.general.string = urlOriginal
+                } label: {
+                    Label("Copy", systemImage: "doc.on.doc")
+                }
+                Button {
+                    DispatchQueue.main.async {
+                        self.imageModel.imageURL = urlOriginal
+                        self.imageModel.isOpen = true
+                    }
+                } label: {
+                    Label("Open", systemImage: "photo.fill")
+                }
+                
+                Button {
+                    DispatchQueue.main.async {
+                        self.photoModel = photo
+                        self.openPhotoDetails = true
+                    }
+                } label: {
+                    Label("Details", systemImage: "info.circle")
+                }
+                
+                ShareLink(item: URL(string: urlOriginal) ?? url) {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                }
+            }
+        } else {
+            EmptyView()
+        }
+    }
+    @ViewBuilder
+    func openSheetWithPhoto() -> some View {
+        ZStack {
+            if let photo = photoModel {
+                PhotoDetailsCardView(photo: photo)
+            }else {
+                Text("Error to show details")
+            }
+        }
+        .presentationDetents([.height(200), .medium])
+        .presentationDragIndicator(.visible)
+
+    }
+    @ViewBuilder
+    func showContentImage(url: URL) -> some View {
+        WebImage(url: url)
+            .placeholder {
+                ProgressView().progressViewStyle(CircularProgressViewStyle())
+            }
+            .resizable()
+            .scaledToFill()
     }
 }
 
@@ -148,11 +161,11 @@ public extension View {
 struct ViewFirstAppearModifier: ViewModifier {
     @State private var didAppearBefore = false
     private let action: () -> Void
-
+    
     init(perform action: @escaping () -> Void) {
         self.action = action
     }
-
+    
     func body(content: Content) -> some View {
         content.onAppear {
             guard !didAppearBefore else { return }

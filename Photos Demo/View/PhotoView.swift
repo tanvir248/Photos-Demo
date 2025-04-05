@@ -21,56 +21,55 @@ struct PhotoView: View {
         NavigationView{
             VStack {
                 if let url = URL(string: urlString) {
-                    WebImage(url: url) { image in
-                        image
-                            .resizable()
-                            .scaledToFit()
-                            .offset(totalZoom > 1.0 ? offset : CGSize.zero)
-                            .scaleEffect(currentZoom + totalZoom)
-                            .gesture(
-                                DragGesture()
-                                    .onChanged({ value in
-                                        withAnimation {
-                                            offset = value.translation
-                                        }
-                                    })
-                            )
-                            .gesture(
-                                MagnifyGesture()
-                                    .onChanged { value in
-                                            currentZoom = value.magnification - 1
+                    WebImage(url: url)
+                        .placeholder {
+                            ProgressView().progressViewStyle(CircularProgressViewStyle())
+                                .scaleEffect(2)
+                                .tint(.secondary)
+                        }
+                        .resizable()
+                        .scaledToFit()
+                        .offset(totalZoom > 1.0 ? offset : CGSize.zero)
+                        .scaleEffect(currentZoom + totalZoom)
+                        .gesture(
+                            DragGesture()
+                                .onChanged({ value in
+                                    withAnimation {
+                                        offset = value.translation
                                     }
-                                    .onEnded { value in
-                                        totalZoom += currentZoom
-                                        currentZoom = 0
-                                    }
-                            )
-                            .accessibilityZoomAction { action in
+                                })
+                        )
+                        .gesture(
+                            MagnifyGesture()
+                                .onChanged { value in
+                                    currentZoom = value.magnification - 1
+                                }
+                                .onEnded { value in
+                                    totalZoom += currentZoom
+                                    currentZoom = 0
+                                }
+                        )
+                        .accessibilityZoomAction { action in
+                            
+                            if action.direction == .zoomIn {
+                                totalZoom += 1
+                            } else {
+                                totalZoom -= 1
+                            }
+                        }
+                        .onTapGesture(count: 2){
+                            withAnimation {
+                                if totalZoom == 1.0 {
+                                    currentZoom = 1.0
+                                    totalZoom = 2.0
+                                }else {
+                                    currentZoom = 0.0
+                                    totalZoom = 1.0
+                                    offset = .zero
+                                }
                                 
-                                if action.direction == .zoomIn {
-                                    totalZoom += 1
-                                } else {
-                                    totalZoom -= 1
-                                }
                             }
-                            .onTapGesture(count: 2){
-                                withAnimation {
-                                    if totalZoom == 1.0 {
-                                        currentZoom = 1.0
-                                        totalZoom = 2.0
-                                    }else {
-                                        currentZoom = 0.0
-                                        totalZoom = 1.0
-                                        offset = .zero
-                                    }
-                                    
-                                }
-                            }
-                    } placeholder: {
-                        ProgressView().progressViewStyle(CircularProgressViewStyle())
-                            .scaleEffect(2)
-                            .tint(.secondary)
-                    }
+                        }
                 }
             }.toolbar{
                 ToolbarItem(placement: .navigationBarLeading) {
